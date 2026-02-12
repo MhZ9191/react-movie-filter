@@ -14,6 +14,7 @@ export default function Main({ films }) {
   const [indexSearch, setIndexSearch] = useState(null);
   const [filterList, setFilterList] = useState(films);
   const [mostraTutti, setMostraTutti] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   //Logic
   const clicked = (indice) => {
@@ -23,6 +24,10 @@ export default function Main({ films }) {
 
   const allList = () => {
     setMostraTutti(true); //al click lo reimposto a true cosi da mostrare tutti i film
+  };
+
+  const searchTitle = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   //useEffect
@@ -35,7 +40,24 @@ export default function Main({ films }) {
       const tmpList = films.filter((el) => el.genre === generi[indexSearch]); //paragono i generi, non ho eseguito "tolowercase()" perchè l'array di stringhe in generi è preso da genre di films
       setFilterList(tmpList);
     }
-  }, [indexSearch, mostraTutti]); //variabili su cui osservarne i cambiamenti
+
+    //ricerca per il titolo
+    if (searchTerm) {
+      //se digito qualcosa inizio la ricerca
+      const searchList = films.filter((element) => {
+        if (
+          element.title
+            .toLowerCase()
+            .trim()
+            .includes(searchTerm.toLowerCase().trim())
+        ) {
+          return element;
+        }
+      });
+
+      setFilterList(searchList);
+    }
+  }, [searchTerm, indexSearch, mostraTutti]); //variabili su cui osservarne i cambiamenti
 
   return (
     <>
@@ -43,7 +65,18 @@ export default function Main({ films }) {
         <section className="sec-main">
           <div className="div-main">
             <div>
-              <label htmlFor="genere">GENERE</label>
+              <span>SEARCH</span>
+              <form>
+                <input
+                  type="text"
+                  placeholder="Type here"
+                  value={searchTerm}
+                  onChange={(e) => searchTitle(e)}
+                />
+              </form>
+            </div>
+            <div>
+              <span>GENERE</span>
               <select name="genere" id="genere">
                 <option value="tutti" onClick={allList}>
                   MOSTRA TUTTI
