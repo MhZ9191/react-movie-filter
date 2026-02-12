@@ -10,54 +10,23 @@ export default function Main({ films }) {
     return acc;
   }, []);
 
-  //useState
-  const [indexSearch, setIndexSearch] = useState(null);
+  const [currentGenere, setCurrentgenere] = useState("");
   const [filterList, setFilterList] = useState(films);
-  const [mostraTutti, setMostraTutti] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  //Logic
-  const clicked = (indice) => {
-    setMostraTutti(false);
-    setIndexSearch(indice); //al click prendo l'indice che corrisponde al genere del mio array "generi", per poi poterlo usare nel filter
+  const test = (e) => {
+    setCurrentgenere(e.target.value);
   };
 
-  const allList = () => {
-    setMostraTutti(true); //al click lo reimposto a true cosi da mostrare tutti i film
-  };
-
-  const searchTitle = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  //useEffect
   useEffect(() => {
-    if (mostraTutti) {
-      //se mostraTutti è true non eseguo nessun filter
+    if (currentGenere.toLowerCase() === "tutti") {
       setFilterList(films);
     } else {
-      //altrimenti filtro in base al genere
-      const tmpList = films.filter((el) => el.genre === generi[indexSearch]); //paragono i generi, non ho eseguito "tolowercase()" perchè l'array di stringhe in generi è preso da genre di films
-      setFilterList(tmpList);
-    }
-
-    //ricerca per il titolo
-    if (searchTerm) {
-      //se digito qualcosa inizio la ricerca
-      const searchList = films.filter((element) => {
-        if (
-          element.title
-            .toLowerCase()
-            .trim()
-            .includes(searchTerm.toLowerCase().trim())
-        ) {
-          return element;
-        }
+      const tempo = films.filter((el) => {
+        return el.genre.includes(currentGenere);
       });
-
-      setFilterList(searchList);
+      setFilterList(tempo);
     }
-  }, [searchTerm, indexSearch, mostraTutti]); //variabili su cui osservarne i cambiamenti
+  }, [currentGenere]);
 
   return (
     <>
@@ -67,27 +36,21 @@ export default function Main({ films }) {
             <div>
               <span>SEARCH</span>
               <form>
-                <input
-                  type="text"
-                  placeholder="Type here"
-                  value={searchTerm}
-                  onChange={(e) => searchTitle(e)}
-                />
+                <input type="text" placeholder="Type here" />
               </form>
             </div>
             <div>
               <span>GENERE</span>
-              <select name="genere" id="genere">
-                <option value="tutti" onClick={allList}>
-                  MOSTRA TUTTI
-                </option>
+              <select
+                name="genere"
+                id="genere"
+                value={currentGenere}
+                onChange={(e) => test(e)}
+              >
+                <option value="tutti">MOSTRA TUTTI</option>
                 {generi.map((genere, ind) => {
                   return (
-                    <option
-                      key={ind}
-                      value="genere"
-                      onClick={() => clicked(ind)}
-                    >
+                    <option key={ind} value={genere}>
                       {genere.toUpperCase()}
                     </option>
                   );
